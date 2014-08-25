@@ -5,8 +5,9 @@
 
 byte WebServer::_mac[] = { 0x0E, 0x33, 0x2E, 0x96, 0x89, 0x0C };
 
-WebServer::WebServer(int port): _server(port) {
+WebServer::WebServer(int port, Garage* garage): _server(port) {
   _buffer[0] = 0;
+  _garage = garage;
 }
 
 void WebServer::start() {
@@ -43,6 +44,12 @@ void WebServer::update() {
       
         break;
       case Response:
+        Serial.print("Big Door: ");
+        Serial.println(_garage->isBigDoorOpen());
+        Serial.print("Back Door: ");
+        Serial.println(_garage->isBackDoorOpen());
+        Serial.print("Basement Door: ");
+        Serial.println(_garage->isBasementDoorOpen());
         delay(1);
         _client.stop();
         _step = None;

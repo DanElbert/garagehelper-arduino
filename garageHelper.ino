@@ -5,6 +5,7 @@
 #include "Switch.h"
 #include "DoorSwitch.h"
 #include "MomentarySwitch.h"
+#include "Garage.h"
 #include "WebServer.h"
 
 const int ssdPin = 4;
@@ -16,16 +17,8 @@ const int switch1Pin = 7;
 const int switch2Pin = 6;
 const int switch3Pin = 5;
 
-const int bounceDelay = 500;
-const long lightDelay = 2000;
-const long garageOpenerDelay = 250;
-
-MomentarySwitch light(relay1Pin, lightDelay);
-MomentarySwitch garageOpener(relay2Pin, garageOpenerDelay);
-DoorSwitch bigDoor(switch1Pin, bounceDelay);
-DoorSwitch basementDoor(switch2Pin, bounceDelay);
-DoorSwitch backDoor(switch3Pin, bounceDelay);
-WebServer webServer(80);
+Garage garage(relay1Pin, relay2Pin, switch1Pin, switch2Pin, switch3Pin);
+WebServer webServer(80, &garage);
 
 int freeRam ()
 {
@@ -53,14 +46,10 @@ void setup() {
 }
 
 void loop() {
-  light.update();
-  garageOpener.update();
-  bigDoor.update();
-  basementDoor.update();
-  backDoor.update();
+  garage.update();
   webServer.update();
   
-  if (bigDoor.isOpen() || basementDoor.isOpen() || backDoor.isOpen()) {
-    light.turnOn();
+  if (garage.isAnyDoorOpen()) {
+    garage.turnOnLight();
   }
 }
