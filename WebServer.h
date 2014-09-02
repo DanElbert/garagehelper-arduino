@@ -14,7 +14,29 @@ enum ProcessStep {
   None,
   Headers,
   Content,
-  Response
+  Response,
+  Fail
+};
+
+enum RequestMethod {
+  MethodUnknown,
+  MethodGet,
+  MethodPut,
+  MethodPost,
+  MethodPatch,
+  MethodDelete
+};
+
+enum Route {
+  RouteUnknown,
+  RouteStatus,
+  RouteGarageSwitch
+};
+
+struct request {
+  RequestMethod method;
+  Route route;
+  boolean valid;
 };
 
 class WebServer {
@@ -27,9 +49,11 @@ class WebServer {
     static byte _mac[];
     BUFFER _buffer;
     ProcessStep _step = None;
+    request _request;
     EthernetClient _client;
     EthernetServer _server;
     
+    void processRequestLine();
     boolean getNextHttpLine(EthernetClient & client, BUFFER & readBuffer);
 };
 

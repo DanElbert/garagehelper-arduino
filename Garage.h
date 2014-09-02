@@ -2,7 +2,6 @@
 #define Garage_h
 
 #include "Arduino.h"
-#include "timer.h"
 #include "Switch.h"
 #include "MomentarySwitch.h"
 
@@ -10,9 +9,9 @@ class Garage {
   public:
     Garage(int lightPin, int garageOpenerPin, int bigDoorPin, int backDoorPin, int basementDoorPin);
     
-    static const int BounceDelay = 500;
-    static const long LightDelay = 2000;
-    static const long GarageOpenerDelay = 250;
+    static const int BounceDelay = 750;
+    static const long LightDelay = 300000; // 5 minutes
+    static const long GarageOpenerDelay = 500;
     
     void update();
     boolean isBigDoorOpen();
