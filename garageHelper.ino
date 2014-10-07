@@ -3,10 +3,10 @@
 
 #include "timer.h"
 #include "Switch.h"
-#include "DoorSwitch.h"
 #include "MomentarySwitch.h"
 #include "Garage.h"
 #include "WebServer.h"
+#include "ChangeNotifier.h"
 
 const int ssdPin = 4;
 
@@ -17,8 +17,11 @@ const int switch1Pin = 7;
 const int switch2Pin = 6;
 const int switch3Pin = 5;
 
+byte macAddr[] = { 0x0E, 0x33, 0x2E, 0x96, 0x89, 0x0C };
+
 Garage garage(relay1Pin, relay2Pin, switch1Pin, switch2Pin, switch3Pin);
 WebServer webServer(80, &garage);
+ChangeNotifier notifier(&garage);
 
 int freeRam ()
 {
@@ -42,12 +45,18 @@ void setup() {
   digitalWrite(relay2Pin, HIGH);
   digitalWrite(ssdPin, HIGH);
   
+  Serial.println("Starting ethernet...");
+  Ethernet.begin(macAddr);
+  Serial.print("server is at ");
+  Serial.println(Ethernet.localIP());
+  
   webServer.start();
 }
 
 void loop() {
   garage.update();
   webServer.update();
+  notifier.update();
   
   if (garage.isAnyDoorOpen()) {
     garage.turnOnLight();

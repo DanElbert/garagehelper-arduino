@@ -46,7 +46,6 @@ class WebServer {
     void update();
   private:
     Garage* _garage;
-    static byte _mac[];
     BUFFER _buffer;
     ProcessStep _step = None;
     request _request;
@@ -54,6 +53,8 @@ class WebServer {
     EthernetServer _server;
     
     void processRequestLine();
+    void sendResponse();
+    void closeClient();
     boolean getNextHttpLine(EthernetClient & client, BUFFER & readBuffer);
 };
 
