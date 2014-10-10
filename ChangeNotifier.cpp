@@ -1,6 +1,10 @@
 #include "ChangeNotifier.h"
 
-ChangeNotifier::ChangeNotifier(Garage* garage): _garage(garage) { 
+ChangeNotifier::ChangeNotifier(Garage* garage): _garage(garage), _keepaliveTimer(300000) {
+}
+
+void ChangeNotifier::start() {
+  _keepaliveTimer.tick();
 }
 
 void ChangeNotifier::update() {
@@ -13,6 +17,10 @@ void ChangeNotifier::update() {
     _bigDoorOpen = readBigDoor;
     _basementDoorOpen = readBasementDoor;
     sendNotification(readBackDoor, readBasementDoor, readBigDoor);
+    _keepaliveTimer.tick();
+  } else if (_keepaliveTimer.tock()) {
+    sendKeepalive();
+    _keepaliveTimer.tick();
   }
 }
 
@@ -30,7 +38,7 @@ void ChangeNotifier::sendNotification(boolean backDoorOpen, boolean basementDoor
       
     String length = String(json.length());
     
-    _client.println("POST /garage/update HTTP/1.1");
+    _client.println("POST /garage/helper/update HTTP/1.1");
     _client.println("Content-Type: application/json;charset=utf-8");
     _client.println("Host: garage.elbert.us");
     _client.println("content-length:" + length);
@@ -38,6 +46,26 @@ void ChangeNotifier::sendNotification(boolean backDoorOpen, boolean basementDoor
     _client.println();
     _client.println(json);
     _client.println();
+    _client.println();
+    
+    while (_client.available()) {
+      // Read answer and print to serial debug
+      char c = _client.read();
+      Serial.print(c);
+    }
+    
+    _client.flush();
+    _client.stop();
+  }
+}
+
+void ChangeNotifier::sendKeepalive() {
+  byte server[] = { 10, 0, 0, 50 };
+  if (_client.connect(server, 80)) {
+    
+    _client.println("GET /garage/helper/keepalive HTTP/1.1");
+    _client.println("Host: garage.elbert.us");
+    _client.println("Connection: close");
     _client.println();
     
     while (_client.available()) {

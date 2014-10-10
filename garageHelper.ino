@@ -51,6 +51,7 @@ void setup() {
   Serial.println(Ethernet.localIP());
   
   webServer.start();
+  notifier.start();
 }
 
 void loop() {
