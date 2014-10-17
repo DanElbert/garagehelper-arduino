@@ -16,6 +16,10 @@ void Garage::update() {
   _bigDoor.update();
   _backDoor.update();
   _basementDoor.update();
+
+  if (isAnyDoorOpen()) {
+    turnOnLight();
+  }
 }
 
 boolean Garage::isBigDoorOpen() {

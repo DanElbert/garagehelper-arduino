@@ -1,7 +1,7 @@
 #include <SPI.h>
 #include <Ethernet.h>
 
-#include "timer.h"
+#include "Timer.h"
 #include "Switch.h"
 #include "MomentarySwitch.h"
 #include "Garage.h"
@@ -23,6 +23,7 @@ Garage garage(relay1Pin, relay2Pin, switch1Pin, switch2Pin, switch3Pin);
 WebServer webServer(80, &garage);
 ChangeNotifier notifier(&garage);
 
+// Debug function to return amount of free ram during runtime
 int freeRam ()
 {
   extern int __heap_start, *__brkval; 
@@ -58,8 +59,4 @@ void loop() {
   garage.update();
   webServer.update();
   notifier.update();
-  
-  if (garage.isAnyDoorOpen()) {
-    garage.turnOnLight();
-  }
 }

@@ -2,7 +2,7 @@
 #define Switch_h
 
 #include "Arduino.h"
-#include "timer.h"
+#include "Timer.h"
 
 class Switch {
   public:

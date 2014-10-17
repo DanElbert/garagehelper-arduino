@@ -3,7 +3,7 @@
 
 #include "Arduino.h"
 #include <Ethernet.h>
-#include "timer.h"
+#include "Timer.h"
 #include "Garage.h"
 
 class ChangeNotifier {
@@ -20,9 +20,9 @@ class ChangeNotifier {
     Garage* _garage;
     EthernetClient _client;
     
-    boolean _backDoorOpen = false;
-    boolean _bigDoorOpen = false;
-    boolean _basementDoorOpen = false;
+    boolean _backDoorOpen;
+    boolean _bigDoorOpen;
+    boolean _basementDoorOpen;
 };
 
 #endif

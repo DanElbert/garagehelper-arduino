@@ -47,7 +47,7 @@ class WebServer {
   private:
     Garage* _garage;
     BUFFER _buffer;
-    ProcessStep _step = None;
+    ProcessStep _step;
     request _request;
     EthernetClient _client;
     EthernetServer _server;

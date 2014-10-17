@@ -1,7 +1,12 @@
 #include "ChangeNotifier.h"
 
-ChangeNotifier::ChangeNotifier(Garage* garage): _garage(garage), _keepaliveTimer(300000) {
-}
+ChangeNotifier::ChangeNotifier(Garage* garage): 
+  _garage(garage),
+  _bigDoorOpen(false),
+  _backDoorOpen(false),
+  _basementDoorOpen(false),
+  _keepaliveTimer(300000) 
+{}
 
 void ChangeNotifier::start() {
   _keepaliveTimer.tick();
@@ -60,21 +65,5 @@ void ChangeNotifier::sendNotification(boolean backDoorOpen, boolean basementDoor
 }
 
 void ChangeNotifier::sendKeepalive() {
-  byte server[] = { 10, 0, 0, 50 };
-  if (_client.connect(server, 80)) {
-    
-    _client.println("GET /garage/helper/keepalive HTTP/1.1");
-    _client.println("Host: garage.elbert.us");
-    _client.println("Connection: close");
-    _client.println();
-    
-    while (_client.available()) {
-      // Read answer and print to serial debug
-      char c = _client.read();
-      Serial.print(c);
-    }
-    
-    _client.flush();
-    _client.stop();
-  }
+  sendNotification(_backDoorOpen, _basementDoorOpen, _bigDoorOpen);
 }

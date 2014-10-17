@@ -1,5 +1,5 @@
 #include "Arduino.h"
-#include "timer.h"
+#include "Timer.h"
 
 Timer::Timer(long msDelay) {
   _msDelay = (unsigned long)msDelay;

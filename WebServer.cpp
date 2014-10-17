@@ -3,7 +3,7 @@
 #include <Ethernet.h>
 #include "WebServer.h"
 
-WebServer::WebServer(int port, Garage* garage): _server(port), _garage(garage) {
+WebServer::WebServer(int port, Garage* garage): _server(port), _garage(garage), _step(None) {
   _buffer[0] = 0;
 }
 
