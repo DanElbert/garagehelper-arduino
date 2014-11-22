@@ -60,6 +60,7 @@ void WebServer::sendResponse() {
       _garage->pressGarageOpener();
       _client.println("HTTP/1.1 204 No Content");
       _client.println("Connection: close");
+      _client.println();
       break;
     
     case RouteUnknown:
