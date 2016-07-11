@@ -1,69 +1,43 @@
 #include "ChangeNotifier.h"
 
-ChangeNotifier::ChangeNotifier(Garage* garage): 
+ChangeNotifier::ChangeNotifier(Garage* garage, PubSubClient* mqtt, const* char topic_root):
   _garage(garage),
+  _mqtt(mqtt),
+  _topicRoot(topic_root),
   _bigDoorOpen(false),
   _backDoorOpen(false),
-  _basementDoorOpen(false),
-  _keepaliveTimer(300000) 
+  _basementDoorOpen(false)
 {}
 
 void ChangeNotifier::start() {
-  _keepaliveTimer.tick();
+
 }
 
 void ChangeNotifier::update() {
   boolean readBackDoor = _garage->isBackDoorOpen();
   boolean readBigDoor = _garage->isBigDoorOpen();
   boolean readBasementDoor = _garage->isBasementDoorOpen();
-  
-  if (readBackDoor != _backDoorOpen || readBigDoor != _bigDoorOpen || readBasementDoor != _basementDoorOpen) {
+
+  if (readBackDoor != _backDoorOpen) {
+    sendNotification("backDoor", readBackDoor);
     _backDoorOpen = readBackDoor;
+  }
+
+  if (readBigDoor != _bigDoorOpen) {
+    sendNotification("bigDoor", readBigDoor);
     _bigDoorOpen = readBigDoor;
+  }
+
+  if (readBasementDoor != _basementDoorOpen) {
+    sendNotification("basementDoor", readBasementDoor);
     _basementDoorOpen = readBasementDoor;
-    sendNotification(readBackDoor, readBasementDoor, readBigDoor);
-    _keepaliveTimer.tick();
-  } else if (_keepaliveTimer.tock()) {
-    sendKeepalive();
-    _keepaliveTimer.tick();
   }
 }
 
-void ChangeNotifier::sendNotification(boolean backDoorOpen, boolean basementDoorOpen, boolean bigDoorOpen) {
-  byte server[] = { 10, 0, 0, 50 };
-  if (_client.connect(server, 80)) {
-    
-    String json = "{\"bigDoor\":";
-    json = json + (bigDoorOpen ? "true" : "false");
-    json = json + ", \"backDoor\":";
-    json = json + (backDoorOpen ? "true" : "false");
-    json = json + ", \"basementDoor\":";
-    json = json + (basementDoorOpen ? "true" : "false");
-    json = json + "}";
-      
-    String length = String(json.length());
-    
-    _client.println("POST /garage/helper/update HTTP/1.1");
-    _client.println("Content-Type: application/json;charset=utf-8");
-    _client.println("Host: garage.elbert.us");
-    _client.println("content-length:" + length);
-    _client.println("Connection: close");
-    _client.println();
-    _client.println(json);
-    _client.println();
-    _client.println();
-    
-    while (_client.available()) {
-      // Read answer and print to serial debug
-      char c = _client.read();
-      Serial.print(c);
-    }
-    
-    _client.flush();
-    _client.stop();
-  }
-}
+void ChangeNotifier::sendNotification(char* doorName, boolean state) {
+  String msg = state ? "OPEN" : "CLOSED";
+  String topic = _topicRoot;
+  topic += doorName;
 
-void ChangeNotifier::sendKeepalive() {
-  sendNotification(_backDoorOpen, _basementDoorOpen, _bigDoorOpen);
+  _mqtt.publish(topic, msg, true);
 }

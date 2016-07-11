@@ -8,11 +8,11 @@
 class Garage {
   public:
     Garage(int lightPin, int garageOpenerPin, int bigDoorPin, int backDoorPin, int basementDoorPin);
-    
-    static const int BounceDelay = 750;
+
+    static const int BounceDelay = 500;
     static const long LightDelay = 300000; // 5 minutes
-    static const long GarageOpenerDelay = 500;
-    
+    static const long GarageOpenerDelay = 1000;
+
     void update();
     boolean isBigDoorOpen();
     boolean isBackDoorOpen();
