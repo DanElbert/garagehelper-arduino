@@ -17,13 +17,14 @@ const int backDoorPin = 12;
 const int basementDoorPin = 14;
 
 #include "Secrets.h"
-//const char* wifi_ssid     = "<SSID>";
-//const char* wifi_password = "<PW>";
-//
-//const char* mqtt_server = "<SERVER>";
-//const char* mqtt_user = "<USER>";
-//const char* mqtt_password = "<PW>";
-//const char* mqtt_client_name = "<NAME>";
+/*
+const char* wifi_ssid     = "<SSID>";
+const char* wifi_password = "<PW>";
+const char* mqtt_server = "<SERVER>";
+const char* mqtt_user = "<USER>";
+const char* mqtt_password = "<PW>";
+const char* mqtt_client_name = "<NAME>";
+*/
 
 static const char* DoorTopicRoot = "garage/door/";
 static const char* ButtonTopic = "garage/button";
