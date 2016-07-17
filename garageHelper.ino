@@ -7,20 +7,23 @@
 #include "Garage.h"
 #include "ChangeNotifier.h"
 
-const int relay1Pin = 9;
-const int relay2Pin = 8;
+const int lightPin = 5;
+const int openerPin = 4;
 
-const int switch1Pin = 7;
-const int switch2Pin = 6;
-const int switch3Pin = 5;
+const int relayEnablePin = 16;
 
-const char* wifi_ssid     = "<SSID>";
-const char* wifi_password = "<PW>";
+const int bigDoorPin = 13;
+const int backDoorPin = 12; 
+const int basementDoorPin = 14;
 
-const char* mqtt_server = "<MQTT>";
-const char* mqtt_user = "<MQTT USER>";
-const char* mqtt_password = "<MQTT PW>";
-const char* mqtt_client_name = "<MQTT CLIENT ID>";
+#include "Secrets.h"
+//const char* wifi_ssid     = "<SSID>";
+//const char* wifi_password = "<PW>";
+//
+//const char* mqtt_server = "<SERVER>";
+//const char* mqtt_user = "<USER>";
+//const char* mqtt_password = "<PW>";
+//const char* mqtt_client_name = "<NAME>";
 
 static const char* DoorTopicRoot = "garage/door/";
 static const char* ButtonTopic = "garage/button";
@@ -28,7 +31,7 @@ static const char* ButtonTopic = "garage/button";
 WiFiClient wifiClient;
 PubSubClient mqtt(wifiClient);
 
-Garage garage(relay1Pin, relay2Pin, switch1Pin, switch2Pin, switch3Pin);
+Garage garage(lightPin, openerPin, bigDoorPin, backDoorPin, basementDoorPin);
 ChangeNotifier notifier(&garage, &mqtt, DoorTopicRoot);
 
 // Debug function to return amount of free ram during runtime
@@ -42,19 +45,24 @@ int freeRam ()
 void setup() {
   Serial.begin(115200);
 
-  pinMode(relay1Pin, OUTPUT);
-  pinMode(relay2Pin, OUTPUT);
+  pinMode(lightPin, OUTPUT);
+  pinMode(openerPin, OUTPUT);
+  pinMode(relayEnablePin, OUTPUT);
+  digitalWrite(relayEnablePin, HIGH);
+  delay(125);
 
-  pinMode(switch1Pin, INPUT_PULLUP);
-  pinMode(switch2Pin, INPUT_PULLUP);
-  pinMode(switch3Pin, INPUT_PULLUP);
+  pinMode(bigDoorPin, INPUT_PULLUP);
+  pinMode(backDoorPin, INPUT_PULLUP);
+  pinMode(basementDoorPin, INPUT_PULLUP);
 
-  digitalWrite(relay1Pin, HIGH);
-  digitalWrite(relay2Pin, HIGH);
+  digitalWrite(lightPin, HIGH);
+  digitalWrite(openerPin, HIGH);
+  delay(125);
+  digitalWrite(relayEnablePin, LOW);
 
   wifi_connect();
 
-  mqtt.setServer(_server, 1883);
+  mqtt.setServer(mqtt_server, 1883);
   mqtt.setCallback(mqtt_callback);
 
   mqtt_connect();
@@ -85,7 +93,7 @@ void mqtt_connect() {
     // Attempt to connect
     if (mqtt.connect(mqtt_client_name, mqtt_user, mqtt_password)) {
       Serial.println("connected");
-      client.subscribe(ButtonTopic);
+      mqtt.subscribe(ButtonTopic);
     } else {
       Serial.print("failed, rc=");
       Serial.print(mqtt.state());

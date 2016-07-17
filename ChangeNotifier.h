@@ -8,18 +8,18 @@
 
 class ChangeNotifier {
   public:
-    ChangeNotifier(Garage* garage, PubSubClient* mqtt);
+    ChangeNotifier(Garage* garage, PubSubClient* mqtt, const char* topic_root);
 
     void start();
     void update();
   private:
     void sendNotification(char* doorName, boolean state);
 
-    const* char _topicRoot;
+    const char* _topicRoot;
     
 
     Garage* _garage;
-    PubSubClient _mqtt;
+    PubSubClient* _mqtt;
 
     boolean _backDoorOpen;
     boolean _bigDoorOpen;

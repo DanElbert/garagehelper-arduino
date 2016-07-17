@@ -1,6 +1,6 @@
 #include "ChangeNotifier.h"
 
-ChangeNotifier::ChangeNotifier(Garage* garage, PubSubClient* mqtt, const* char topic_root):
+ChangeNotifier::ChangeNotifier(Garage* garage, PubSubClient* mqtt, const char* topic_root):
   _garage(garage),
   _mqtt(mqtt),
   _topicRoot(topic_root),
@@ -39,5 +39,5 @@ void ChangeNotifier::sendNotification(char* doorName, boolean state) {
   String topic = _topicRoot;
   topic += doorName;
 
-  _mqtt.publish(topic, msg, true);
+  _mqtt->publish(topic.c_str(), msg.c_str(), true);
 }
